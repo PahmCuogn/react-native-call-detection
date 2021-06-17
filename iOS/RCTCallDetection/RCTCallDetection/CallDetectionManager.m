@@ -50,14 +50,15 @@ RCT_EXPORT_METHOD(stopListener) {
 }
 
 - (void)callObserver:(CXCallObserver *)callObserver callChanged:(CXCall *)call {
+    NSLog(@"CALLED");
     if (call.hasEnded == true) {
       [self sendEventWithName:@"PhoneCallStateUpdate" body:@"Disconnected"];
-    } else if (call.hasConnected == true) {
-      [self sendEventWithName:@"PhoneCallStateUpdate" body:@"Connected"];
-    } else if (call.isOutgoing == true) {
+    } else if (call.isOutgoing == true && call.hasConnected == false && call.hasEnded == false) {
       [self sendEventWithName:@"PhoneCallStateUpdate" body:@"Dialing"];
-    } else {
+    }else if (call.isOutgoing == false && call.hasConnected == false) {
       [self sendEventWithName:@"PhoneCallStateUpdate" body:@"Incoming"];
+    }else if (call.hasEnded == false && call.hasConnected == true) {
+      [self sendEventWithName:@"PhoneCallStateUpdate" body:@"Connected"];
     }
 }
 
